@@ -1,37 +1,73 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from "axios"
+import CurrencySelect from './components/CurrencySelect';
+
+const BASE_URL = 'https://free.currconv.com';
+const API_KEY = process.env.REACT_APP_CONVERTER_API_KEY;
 
 function App() {
 
   const [count, setCount] = useState(0);
-  const [first, setFirst] = useState("CAD");
-  const [second, setSecond] = useState("USD");
+  const [from, setFrom] = useState("CAD");
+  const [to, setTo] = useState("USD");
   const [rate, setRate] = useState([]);
   const[result,setResult] = useState(0)
-  
-  
-  const getRate = (first, second) => {
+
+  const [error, setError] = useState(null);
+  const [currencies, setCurrencies] = useState([]);
+
+  useEffect(() => {
+    fetchCurrencies();
+  }, []);
+
+  const fetchCurrencies = useCallback(async () => {
+    // // get all currencies
+    // axios({
+    //   method: "GET",
+    //   url: `${BASE_URL}/api/v7/currencies?apiKey=${API_KEY}`,
+    // }).then((response) => {
+    //   // results: [{ id, currencyName, currencySymbol }]
+    //   setCurrencies(Object.values(response.data.results));
+    // }).catch((e) => {
+    //   setError(e.message);
+    // })
+
+    try {
+      const response = await axios({
+        method: "GET",
+        url: `${BASE_URL}/api/v7/currencies?apiKey=${API_KEY}`,
+      });
+      setCurrencies(Object.values(response.data.results));
+    } catch (e) {
+      setError(e.message);
+    }
+  }, []);
+
+  const swapFromTo = useCallback(() => {
+    const swap = to;
+    setTo(from);
+    setFrom(swap);
+  }, [from, to]);
+
+  const getRate = (from, to) => {
     axios({
       method: "GET",
-      url: `https://free.currconv.com/api/v7/convert?q=${first}_${second}&compact=ultra&apiKey=5a49beefa5e7696bc287`,
+      url: `https://free.currconv.com/api/v7/convert?q=${from}_${to}&compact=ultra&apiKey=${API_KEY}`,
     })
       .then((response) => {
         console.log(response.data);
 
         setRate(response.data);
         const m = {}  ;
-        console.log( rate["${first}_${second}"]);
+        console.log( rate["${from}_${to}"]);
         console.log({count});
         console.log(m);
         console.log({result});
         setResult();
       })
-     
+
   };
 
-  
-
- 
   return (
     <div className='app'>
        <div className='container'>
@@ -39,19 +75,13 @@ function App() {
            <input type="number" id="Montant" name="Montant" placeholder="0" onChange={(e) => setCount(e.target.value)}/>
        </div>
        <div className='container-flex'>
-         <select id="country" name="country" className='money' onChange={(e) => setFirst(e.target.value)}>
-           <option value="CAD">CAD</option>
-           <option value="USD">USD</option> 
-           <option value="AED">AED</option> 
-           <option value="GBP">GBP</option> 
-           <option value="TND">TND</option> 
-         </select>
-         <button className='change'> ⇆ </button>
-         <div className='money'>USD</div>
+         <CurrencySelect currencies={currencies} selected={to} setSelected={setTo} />
+         <button className='change' onClick={swapFromTo}> ⇆ </button>
+         <CurrencySelect currencies={currencies} selected={from} setSelected={setFrom} />
        </div>
 
-       <button className='convertir' onClick={() => {getRate(first, second);}}>Convertir</button>
-       <div className='result'>1 {first} = {rate[`${first}_${second}`]} <h1>{second}</h1> </div>  
+       <button className='convertir' onClick={() => {getRate(from, to);}}>Convertir</button>
+       <div className='result'>1 {from} = {rate[`${from}_${to}`]} <h1>{to}</h1> </div>
     </div>
   );
 }
