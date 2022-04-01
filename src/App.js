@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from "axios"
 import CurrencySelect from './components/CurrencySelect';
+import useLocalStorage from './useLocalStorage';
 
 const BASE_URL = 'https://free.currconv.com';
 const API_KEY = process.env.REACT_APP_CONVERTER_API_KEY;
@@ -8,15 +9,33 @@ const API_KEY = process.env.REACT_APP_CONVERTER_API_KEY;
 function App() {
 
   const [count, setCount] = useState(0);
-  const [from, setFrom] = useState("CAD");
-  const [to, setTo] = useState("USD");
+  // const [from, setFrom] = useState("CAD");
+  // const [to, setTo] = useState("USD");
+  const [from, setFrom] = useLocalStorage('from', 'CAD');
+  const [to, setTo] = useLocalStorage('to', 'USD');
   const [rate, setRate] = useState([]);
   const[result,setResult] = useState(0)
 
   const [error, setError] = useState(null);
   const [currencies, setCurrencies] = useState([]);
 
+  // const handleChangeFrom = (from) => {
+  //   setFrom(from);
+  //   // save 'from' to localstorage
+  //   window.localStorage.setItem('from', from);
+  // }
+  //
+  // const handleChangeTo = (to) => {
+  //   setTo(to);
+  //   // save 'to' to localstorage
+  //   window.localStorage.setItem('to', to);
+  // }
+
   useEffect(() => {
+    // const initialFrom = window.localStorage.getItem('from') || 'CAD';
+    // const initialTo = window.localStorage.getItem('to') || 'USD';
+    // setFrom(initialFrom);
+    // setTo(initialTo);
     fetchCurrencies();
   }, []);
 
