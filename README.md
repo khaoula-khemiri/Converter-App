@@ -1,3 +1,5 @@
+# App Description
+
 
 Converter-App allows you to carry out a currency conversion operation. The operation of a device converter is very simple. Simply enter a sum of money expressed in one currency and you get the corresponding sum expressed in another currency .
 
