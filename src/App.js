@@ -4,7 +4,7 @@ import CurrencySelect from './components/CurrencySelect';
 import useLocalStorage from './useLocalStorage';
 
 const BASE_URL = 'https://free.currconv.com';
-const API_KEY = process.env.REACT_APP_CONVERTER_API_KEY;
+const API_KEY = '9570054971f933853859';
 
 function App() {
 
